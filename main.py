@@ -3,6 +3,7 @@ from random import *
 from collections import OrderedDict
 from fitness import get_fitness_and_best4
 from roulette import Roulette
+import matplotlib.pyplot as plt
 
 def get_input():
     height = int(input("Enter heighth: "))
@@ -50,21 +51,33 @@ def breed_and_mutate(solution1,solution2,breeding_probability,mutation_probabili
         solution2.mutate()
 
 def print_population(population,fitness_sum):
-    #for solution in population:
-     #  print(solution.get_sequence())
-     #  print(solution.get_fitness())
+    for solution in population:
+       print(solution.get_sequence())
+       print(solution.get_fitness())
 
     print("TOTAL FITNESS: "+str(fitness_sum))
     print("________________________________________________________________")
+
+
+def make_graph(x_axis,y_axis):
+    plt.plot(x_axis, y_axis)
+    plt.xlabel('Generation')
+    plt.ylabel('Fitness sum')
+    plt.show()
 
 BREEDING_PROBABILITY = 90
 MUTATION_PROBABILITY = 5
 
 map,height,width,stones_num = get_input()
+print_map(map)
 population = create_starting_population(height,width)
+y_axis = []
+x_axis = []
 for j in range(100):
     fitness_sum,best4 = get_fitness_and_best4(map,height,width,stones_num,population)
-    print_population(population,fitness_sum)
+    x_axis.append(j)
+    y_axis.append(fitness_sum)
+    #print_population(population,fitness_sum)
     new_population = []
     new_population += best4
     roulette = Roulette(population)
@@ -80,6 +93,8 @@ for j in range(100):
         new_population.append(second)
     population = new_population
 
-for solution in population:
-     print(solution.get_sequence())
-     print(solution.get_fitness())
+
+#for solution in population:
+#     print(solution.get_sequence())
+#     print(solution.get_fitness())
+make_graph(x_axis,y_axis)
