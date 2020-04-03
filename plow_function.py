@@ -1,6 +1,5 @@
 def is_index_in_map(x, y, max_x, max_y):
     if x < max_x and x >= 0 and y < max_y and y >= 0:
-        # if map[x][y] = 0:
         return True
     return False
 
