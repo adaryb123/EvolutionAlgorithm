@@ -9,24 +9,24 @@ def assign_fitness(empty_map,height,width,stones_num,solution):
             break
     solution.set_fitness((height * width) - sum(row.count(0) for row in map) - stones_num)
 
-def add_to_best4(solution,best4):
-    for i in range(4):
-        if i == len(best4):
-            best4.append(solution)
+def add_to_best_solutions(solution,best_solutions,solutions_to_keep):
+    for i in range(solutions_to_keep):
+        if i == len(best_solutions):
+            best_solutions.append(solution)
             break
 
-        elif best4[i].get_fitness() < solution.get_fitness():
-            best4.insert(i,solution)
+        elif best_solutions[i].get_fitness() < solution.get_fitness():
+            best_solutions.insert(i,solution)
             break
 
-    return best4[:4]
+    return best_solutions[:solutions_to_keep]
 
-def get_fitness_and_best4(map,height,width,stones_num,population):
+def get_fitness_and_best_solutions(map,height,width,stones_num,population,solutions_to_keep):
     sum = 0
-    best4 = []
+    best_solutions = []
     for solution in population:
         assign_fitness(map,height,width,stones_num,solution)
         sum += solution.get_fitness()
-        best4 = add_to_best4(solution,best4)
+        best_solutions = add_to_best_solutions(solution,best_solutions,solutions_to_keep)
 
-    return sum,best4
+    return sum,best_solutions

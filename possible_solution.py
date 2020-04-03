@@ -1,4 +1,6 @@
-import random
+from random import *
+import random as RANDOM
+from collections import OrderedDict
 
 class Solution:
 
@@ -18,4 +20,35 @@ class Solution:
         self.sequence = sequence
 
     def mutate(self):
-        random.shuffle(self.sequence)
+        RANDOM.shuffle(self.sequence)
+
+
+
+def cross_breed(solution1,solution2):
+    sequence1 = solution1.get_sequence()
+    sequence2 = solution2.get_sequence()
+    new_sequence1 = sequence1[:int((len(sequence1)/2)+1)] + sequence2[int((len(sequence2)/2)-1):]
+    new_sequence2 = sequence2[:int((len(sequence2)/2)+1)] + sequence1[int((len(sequence1)/2)-1):]
+    solution1.set_sequence(list(OrderedDict.fromkeys(new_sequence1)))
+    solution2.set_sequence(list(OrderedDict.fromkeys(new_sequence2)))
+
+def breed_and_mutate(solution1,solution2,breeding_probability,mutation_probability):
+    chance = randint(0,100)
+    if chance <= breeding_probability:
+        cross_breed(solution1,solution2)
+    chance = randint(0, 100)
+    if chance <= mutation_probability:
+        solution1.mutate()
+    chance = randint(0, 100)
+    if chance <= mutation_probability:
+        solution2.mutate()
+
+def create_starting_population(height,width):
+    max_solution_length = height + width
+    starting_points = list(range(0,max_solution_length))
+    population = [Solution() for i in range(100)]
+    for i in range(100):
+        solution_length = randint(int(max_solution_length/2),max_solution_length-1)
+        population[i].set_sequence(sample(starting_points,solution_length))
+
+    return population

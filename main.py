@@ -1,9 +1,8 @@
-from possible_solution import Solution
-from random import *
-from collections import OrderedDict
-from fitness import get_fitness_and_best4
+from possible_solution import create_starting_population,breed_and_mutate
+from fitness import get_fitness_and_best_solutions
 from roulette import Roulette
 import matplotlib.pyplot as plt
+import copy
 
 def get_input():
     height = int(input("Enter heighth: "))
@@ -21,44 +20,6 @@ def print_map(map):
     print('\n'.join([''.join(['{:4}'.format(item) for item in row]) for row in map]))
     print("_________________")
 
-def create_starting_population(height,width):
-    max_solution_length = height + width
-    starting_points = list(range(0,max_solution_length))
-    population = [Solution() for i in range(100)]
-    for i in range(100):
-        solution_length = randint(int(max_solution_length/2),max_solution_length-1)
-        population[i].set_sequence(sample(starting_points,solution_length))
-
-    return population
-
-def cross_breed(solution1,solution2):
-    sequence1 = solution1.get_sequence()
-    sequence2 = solution2.get_sequence()
-    new_sequence1 = sequence1[:int((len(sequence1)/2)+1)] + sequence2[int((len(sequence2)/2)-1):]
-    new_sequence2 = sequence2[:int((len(sequence2)/2)+1)] + sequence1[int((len(sequence1)/2)-1):]
-    solution1.set_sequence(list(OrderedDict.fromkeys(new_sequence1)))
-    solution2.set_sequence(list(OrderedDict.fromkeys(new_sequence2)))
-
-def breed_and_mutate(solution1,solution2,breeding_probability,mutation_probability):
-    chance = randint(0,100)
-    if chance <= breeding_probability:
-        cross_breed(solution1,solution2)
-    chance = randint(0, 100)
-    if chance <= mutation_probability:
-        solution1.mutate()
-    chance = randint(0, 100)
-    if chance <= mutation_probability:
-        solution2.mutate()
-
-def print_population(population,fitness_sum):
-    for solution in population:
-       print(solution.get_sequence())
-       print(solution.get_fitness())
-
-    print("TOTAL FITNESS: "+str(fitness_sum))
-    print("________________________________________________________________")
-
-
 def make_graph(x_axis,y_axis):
     plt.plot(x_axis, y_axis)
     plt.xlabel('Generation')
@@ -67,34 +28,26 @@ def make_graph(x_axis,y_axis):
 
 BREEDING_PROBABILITY = 90
 MUTATION_PROBABILITY = 5
+SOLUTIONS_KEPT = 10
+GENERATION_LIMIT = 100
 
 map,height,width,stones_num = get_input()
 print_map(map)
 population = create_starting_population(height,width)
 y_axis = []
 x_axis = []
-for j in range(100):
-    fitness_sum,best4 = get_fitness_and_best4(map,height,width,stones_num,population)
+for j in range(GENERATION_LIMIT):
+    fitness_sum,best_solutions = get_fitness_and_best_solutions(map,height,width,stones_num,population,SOLUTIONS_KEPT)
     x_axis.append(j)
     y_axis.append(fitness_sum)
-    #print_population(population,fitness_sum)
     new_population = []
-    new_population += best4
+    new_population += best_solutions
     roulette = Roulette(population)
-    for i in range(48):
+    for i in range(int((GENERATION_LIMIT-SOLUTIONS_KEPT) / 2)):
         first,second = roulette.pick_two()
-        #print(len(first.get_sequence()))
-       #print(len(second.get_sequence()))
         breed_and_mutate(first,second,BREEDING_PROBABILITY,MUTATION_PROBABILITY)
-       # print(len(first.get_sequence()))
-       # print(len(second.get_sequence()))
-      #  print("_______________________________________________")
         new_population.append(first)
         new_population.append(second)
-    population = new_population
+    population = copy.deepcopy(new_population)
 
-
-#for solution in population:
-#     print(solution.get_sequence())
-#     print(solution.get_fitness())
 make_graph(x_axis,y_axis)
