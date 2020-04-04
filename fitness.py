@@ -1,15 +1,18 @@
 from plow_function import plow
 import copy
 
-def assign_fitness(empty_map,height,width,stones_num,solution):
+def maximum_possible_fitness(height,width,stones_num):          #function calculates how many empty spaces are in map
+    return (height * width) - stones_num
+
+def assign_fitness(empty_map,height,width,stones_num,solution):         #function assigns fitness to a solution
     map = copy.deepcopy(empty_map)
     sequence = solution.get_sequence()
     for i in range(len(sequence)):
         if plow(map,height,width,sequence[i],i+1) == False:
             break
-    solution.set_fitness((height * width) - sum(row.count(0) for row in map) - stones_num)
+    solution.set_fitness(maximum_possible_fitness(height,width,stones_num) - sum(row.count(0) for row in map) )
 
-def add_to_best_solutions(solution,best_solutions,solutions_to_keep):
+def add_to_best_solutions(solution,best_solutions,solutions_to_keep):       #function adds solution to the best few from population, if it is
     for i in range(solutions_to_keep):
         if i == len(best_solutions):
             best_solutions.append(solution)
@@ -21,7 +24,7 @@ def add_to_best_solutions(solution,best_solutions,solutions_to_keep):
 
     return best_solutions[:solutions_to_keep]
 
-def get_fitness_and_best_solutions(map,height,width,stones_num,population,solutions_to_keep):
+def get_fitness_and_best_solutions(map,height,width,stones_num,population,solutions_to_keep):   #function assign fitness to whole population and finds best few solutions
     sum = 0
     best_solutions = []
     for solution in population:
@@ -30,3 +33,5 @@ def get_fitness_and_best_solutions(map,height,width,stones_num,population,soluti
         best_solutions = add_to_best_solutions(solution,best_solutions,solutions_to_keep)
 
     return sum,best_solutions
+
+
