@@ -1,15 +1,15 @@
 from random import *
 
 class Roulette:
-    indexes = []
+    population = []
 
-    def __init__(self,population):          #when roulette is created, every solution from population gets ammount of indexes based on their fitness
-        self.indexes.clear()
+    def __init__(self,population):          #when roulette is created, every solution from population gets ammount of population based on their fitness
+        self.population.clear()
         for solution in population:
             for i in range(solution.get_fitness()):
-                self.indexes.insert(0,solution)
+                self.population.insert(0,solution)
 
     def pick_two(self):             #function removes 2 random solutions from roulette
-        first = self.indexes[randint(0,len(self.indexes) - 1)]
-        second = self.indexes[randint(0, len(self.indexes) - 1)]
+        first = self.population[randint(0,len(self.population) - 1)]
+        second = self.population[randint(0, len(self.population) - 1)]
         return first,second
