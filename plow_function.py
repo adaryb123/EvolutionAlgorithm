@@ -18,123 +18,79 @@ def get_starting_configuration(i, height, width):       #function returns corres
     else:
         return "UNKNOWN CONFIGURATION"
 
-def is_index_starting(x,y,starting_x,starting_y):
-    return (x==starting_x) and (y == starting_y)
+def is_index_starting(x,y,starting_x,starting_y):       #function checks if the index is index of staring row or column
+    return (x == starting_x) and (y == starting_y)
+
+def turn(available_turns,configuration):
+    if available_turns == 2:
+        if configuration == "DOWN":
+            configuration = "LEFT"
+        elif configuration == "RIGHT":
+            configuration = "DOWN"
+        elif configuration == "UP":
+            configuration = "RIGHT"
+        elif configuration == "LEFT":
+            configuration = "UP"
+            available_turns -= 1
+    elif available_turns == 1:
+        if configuration == "LEFT":
+            configuration = "RIGHT"
+        elif configuration == "UP":
+            configuration = "DOWN"
+        elif configuration == "RIGHT":
+            configuration = "LEFT"
+        elif configuration == "DOWN":
+            configuration = "UP"
+            available_turns -= 1
+    elif available_turns == 0:
+        configuration = "END"
+    return available_turns,configuration
 
 def plow(map, height, width, starting_row_or_column, plow_num):         #function plows the map from starting point, going in straight line, turning right at obstacles
-    configuration = get_starting_configuration(starting_row_or_column, height, width)
 
+    configuration = get_starting_configuration(starting_row_or_column, height, width)
     if configuration == "DOWN":
         starting_x = 0
-        starting_y = starting_row_or_column  # mozno starting column -1 ?
+        starting_y = starting_row_or_column  
     elif configuration == "LEFT":
         starting_x = starting_row_or_column - width
         starting_y = width - 1
-    available_directons = 4
-    first_step = True
-    current_x = 0
-    current_y = 0
-    last_configuration = configuration
-    while is_index_in_map(current_x, current_y, height, width):
-        if first_step:
-            if configuration == "DOWN":
-                starting_x -= 1
-            elif configuration == "LEFT":
-                starting_y += 1
-            current_x = starting_x
-            current_y = starting_y
-            first_step = False
 
-        if available_directons == 0:
-            return False
+    if is_index_empty(map,starting_x,starting_y) == False:      #neviem ci tu ma byt return True alebo False
+        return True,plow_num
+    else:
+        map[starting_x][starting_y] = plow_num
 
-        # move down if possible
+    current_x = starting_x
+    current_y = starting_y
+    available_turns = 2
+    while(is_index_in_map(current_x,current_y, height, width)):
         if configuration == "DOWN":
-            if last_configuration == "UP":
-                configuration = "LEFT"
-                available_directons -= 1
+            current_x += 1
+        elif configuration == "UP":
+            current_x -= 1
+        elif configuration == "LEFT":
+            current_y -= 1
+        elif configuration == "RIGHT":
+            current_y += 1
+        elif configuration == "END":
+            return False,plow_num
 
-            next_x = current_x + 1
-            next_y = current_y
-          #  if is_index_starting(current_x,current_y,starting_x,starting_y):
-          #      configuration = "LEFT"
-          #      available_directons -= 1
-            if is_index_in_map(next_x, next_y, height, width) == False:
-                break
-            if is_index_empty(map, next_x, next_y):
-                map[next_x][next_y] = plow_num
-                current_x = next_x
-                available_directons = 4
-                last_configuration = configuration
+
+        if is_index_in_map(current_x,current_y, height, width) == False:
+            break
+        else:
+            if is_index_empty(map,current_x,current_y):
+                map[current_x][current_y] = plow_num
+                available_turns = 2
             else:
-                configuration = "LEFT"
-                available_directons -= 1
-            continue
-
-        # move left if possible
-        if configuration == "LEFT":
-            if last_configuration == "RIGHT":
-                configuration = "UP"
-                available_directons -= 1
-            next_x = current_x
-            next_y = current_y - 1
-          #  if is_index_starting(current_x,current_y,starting_x,starting_y):
-          #      configuration = "UP"
-          #      available_directons -= 1
-            if is_index_in_map(next_x, next_y, height, width) == False:
-                break
-            if is_index_empty(map, next_x, next_y):
-                map[next_x][next_y] = plow_num
-                current_y = next_y
-                available_directons = 4
-                last_configuration = configuration
-            else:
-                configuration = "UP"
-                available_directons -= 1
-            continue
-
-        # move up if possible
-        if configuration == "UP":
-            if last_configuration == "DOWN":
-                configuration = "RIGHT"
-                available_directons -= 1
-            next_x = current_x - 1
-            next_y = current_y
-         #   if is_index_starting(current_x,current_y,starting_x,starting_y):
-         #       configuration = "RIGHT"
-         #       available_directons -= 1
-            if is_index_in_map(next_x, next_y, height, width) == False:
-                break
-            if is_index_empty(map, next_x, next_y):
-                map[next_x][next_y] = plow_num
-                current_x = next_x
-                available_directons = 4
-                last_configuration = configuration
-            else:
-                configuration = "RIGHT"
-                available_directons -= 1
-            continue
-
-        # move right if possible
-        if configuration == "RIGHT":
-            if last_configuration == "LEFT":
-                configuration = "DOWN"
-                available_directons -= 1
-            next_x = current_x
-            next_y = current_y + 1
-        #    if is_index_starting(current_x,current_y,starting_x,starting_y):
-        #        configuration = "DOWN"
-        #        available_directons -= 1
-            if is_index_in_map(next_x, next_y, height, width) == False:
-                break
-            if is_index_empty(map, next_x, next_y):
-                map[next_x][next_y] = plow_num
-                current_y = next_y
-                available_directons = 4
-                last_configuration = configuration
-            else:
-                configuration = "DOWN"
-                available_directons -= 1
-            continue
-
-    return True
+                if configuration == "DOWN":
+                    current_x -= 1
+                elif configuration == "UP":
+                    current_x += 1
+                elif configuration == "LEFT":
+                    current_y += 1
+                elif configuration == "RIGHT":
+                    current_y -= 1
+                available_turns,configuration = turn(available_turns,configuration)
+    return True,plow_num+1
