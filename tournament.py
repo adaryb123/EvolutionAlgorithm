@@ -28,14 +28,13 @@ class Tournament():
     def pick_two(self):
         indexes = list(range(100))
         three_random = sample(indexes,3)
-        #print(three_random)
         solution1 = self.population[three_random[0]]
         solution2 = self.population[three_random[1]]
         solution3 = self.population[three_random[2]]
         first = self.compete(solution1,solution2,solution3)
 
         three_random = sample(indexes, 3)
-        #print(three_random)
+        two_random = sample(indexes, 2)
         solution1 = self.population[three_random[0]]
         solution2 = self.population[three_random[1]]
         solution3 = self.population[three_random[2]]

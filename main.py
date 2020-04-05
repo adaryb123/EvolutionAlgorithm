@@ -35,10 +35,10 @@ def change_paramenters(BREEDING_PROBABILITY,MUTATION_PROBABILITY,SOLUTIONS_KEPT,
     print_parameters(BREEDING_PROBABILITY, MUTATION_PROBABILITY, SOLUTIONS_KEPT, GENERATION_LIMIT, METHOD_OF_SELECTION)
     change = input("Do you wish to change parameters? Y/N : ")
     if change == "Y":
-        BREEDING_PROBABILITY = int(input("Enter breeding probability <0,100> (default 70): "))
-        MUTATION_PROBABILITY = int(input("Enter mutation probability <0,100> (default 5): "))
-        SOLUTIONS_KEPT = int(input("Enter number of best solutions kept from each generation <0,100> (default 20): "))
-        GENERATION_LIMIT = int("Enter generation count (default 100):  ")
+        BREEDING_PROBABILITY = int(input("Enter breeding probability <0,100> (default "+str(BREEDING_PROBABILITY)+"): "))
+        MUTATION_PROBABILITY = int(input("Enter mutation probability <0,100> (default "+str(MUTATION_PROBABILITY)+"): "))
+        SOLUTIONS_KEPT = int(input("Enter number of best solutions kept from each generation <0,100> (default "+str(SOLUTIONS_KEPT)+"): "))
+        GENERATION_LIMIT = int(input("Enter generation count (default "+str(GENERATION_LIMIT)+"):  "))
         METHOD_OF_SELECTION = input("Enter method of selection 'R'/'T' (roulette/tournament): ")
         if METHOD_OF_SELECTION == "R":
             METHOD_OF_SELECTION = "ROULETTE"
@@ -76,25 +76,30 @@ MUTATION_PROBABILITY = 5
 SOLUTIONS_KEPT = 20  # MUST BE EVEN NUMBER
 GENERATION_LIMIT = 100
 METHOD_OF_SELECTION = "ROULETTE" # MUST BE "ROULETTE" OR "TOURNAMENT"
+
 map,height,width,stones_num = get_input()
-change_paramenters(BREEDING_PROBABILITY,MUTATION_PROBABILITY,SOLUTIONS_KEPT,GENERATION_LIMIT,METHOD_OF_SELECTION)
+BREEDING_PROBABILITY,MUTATION_PROBABILITY,SOLUTIONS_KEPT,GENERATION_LIMIT,METHOD_OF_SELECTION = change_paramenters(BREEDING_PROBABILITY,MUTATION_PROBABILITY,SOLUTIONS_KEPT,GENERATION_LIMIT,METHOD_OF_SELECTION)
 population = create_starting_population(height,width)
 maximum_possible_fitness = maximum_possible_fitness(height,width,stones_num)
 y_axis = []
 x_axis = []
 best_solutions = []
+
 for j in range(GENERATION_LIMIT):
-    print("Generation: " + str(j))
+    if j % 10 == 0:
+        print("Generation: " + str(j))
     best_solutions.clear()
     fitness_sum,best_solutions = get_fitness_and_best_solutions(map,height,width,stones_num,population,SOLUTIONS_KEPT)
     x_axis.append(j)
     y_axis.append(fitness_sum)
     new_population = []
     new_population = copy.deepcopy(best_solutions)
+
     if METHOD_OF_SELECTION == "ROULETTE":
         selection = Roulette(population)
     elif METHOD_OF_SELECTION == "TOURNAMENT":
         selection = Tournament(population)
+
     for i in range(int((100-SOLUTIONS_KEPT) / 2)):
         first,second = selection.pick_two()
         breed_and_mutate(first,second,BREEDING_PROBABILITY,MUTATION_PROBABILITY)
