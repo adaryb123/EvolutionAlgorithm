@@ -1,2 +1,2 @@
 # Python-EvolutionAlgorithm
-Finding solution to a assigned task(game) using evolutionary algorithm.
+Finding solution to an assigned task(game) using evolutionary algorithm.
